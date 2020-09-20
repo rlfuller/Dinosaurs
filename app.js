@@ -36,25 +36,22 @@
 
 // On button click, prepare and display infographic
 
-function getDinoData(){
-    fetch("http://localhost:3000/Dinos")
-        .then(
-            function(response){
-                if(response.status !== 200){
-                    console.log("Looks like there was a problem. Try again later.");
-                    //insert into the dom a sorry
-                    return;
-                }
+const constructDinosaurs = (data) => {
+    console.log(data);
+    //also here, construct grid objects
+}
 
-                //do something
-                response.json().then(function(data){
-                    console.log(data);
-                    //also here, construct grid objects
-                });
-            }
-        )
-        .catch(function(err){
-            console.log("error", err);
-            //also insert into a dom a sorry
-        });
+const getDinoData = () => {
+    fetch("http://localhost:5000/dino.json").then((response) => {
+        if(!response.ok) {
+            const msg = "Looks like there was a problem. Try again later.";
+            throw new Error(msg);
+        }
+        return response.json();
+    }).then((data) => {
+        constructDinosaurs(data);
+    }).catch((err) => {
+        console.log("error", err);
+
+    });
 }

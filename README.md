@@ -2,10 +2,12 @@
 Small project that builds an infographic using object oriented javascript
 
 running
-uses json-server to mock an api server
+uses serve as a server
 do npm init
-start the server with json-server --watch dino.json
-server is running on port 3000
+runs with npx serve
 
-http://localhost:3000/Dinos
+to start the application do npx start
+
+http://localhost:5000 
+so this is your choice
 
