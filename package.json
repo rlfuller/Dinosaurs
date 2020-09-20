@@ -1,0 +1,26 @@
+{
+  "name": "dinosaurs",
+  "version": "1.0.0",
+  "description": "Project demonstrating use of object oriented javascript",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rlfuller/Dinosaurs.git"
+  },
+  "keywords": [
+    "js",
+    "javascript"
+  ],
+  "author": "Rachel Fuller",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rlfuller/Dinosaurs/issues"
+  },
+  "homepage": "https://github.com/rlfuller/Dinosaurs#readme",
+  "devDependencies": {
+    "json-server": "^0.16.1"
+  }
+}
