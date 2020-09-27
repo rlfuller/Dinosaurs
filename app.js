@@ -1,34 +1,33 @@
 
+(function() {
     function Animal(obj) {
-        this.species = dinoObject.species;
-        this.weight = dinoObject.weight;
-        this.height = dinoObject.height;
-        this.diet = dinoObject.diet;
+        this.species = obj.species;
+        this.weight = obj.weight;
+        this.height = obj.height;
+        this.diet = obj.diet;
     }
 
     // Create Dino Constructor
-    function Dinosaur(dinoObject) {
-        this.where = dinoObject.where;
-        this.when = dinoObject.when;
-        this.fact = dinoObject.fact;
+    function Dinosaur(obj) {
+        Animal.call(this, obj);
+        this.where = obj.where;
+        this.when = obj.when;
+        this.fact = obj.fact;
     }
     Dinosaur.prototype = Object.create(Animal.prototype);
+    Dinosaur.prototype.constructor = Dinosaur;
 
-    // Create Dino Objects
-    function constructDinosaurs(dinoArray){
-        return dinoArray.map(dino => {
-            return new Dinosaur(dino);
-        });
-    }
 
     // Create Human Object
 
     function Human(obj) {
+        Animal.call(this, obj);
+        this.species = "Human";
         this.name = obj.name;
-        this.height = obj.height;
-        this.
     }
 
+    Human.prototype = Object.create(Animal.prototype);
+    Human.prototype.constructor = Human;
     // Use IIFE to get human data from form
 
 
@@ -47,9 +46,9 @@
     // Generate Tiles for each Dino in Array
   
         // Add tiles to DOM
-    const generateHtmlDinosaurs = (dinoArr) => {
+    const generateHtmlDinosaurs = (dinoArray) => {
         let fragment = document.createDocumentFragment();
-
+        console.log("rachel: ", dinoArray);
         dinoArray.forEach(dino => {
 
             //create div add a class and an id
@@ -71,46 +70,79 @@
         document.getElementById("grid").appendChild(fragment);
     }
         
-
+    const generateHtmlHuman = (human) => {
+        let beforeSibling = document.querySelector("div.grid-item:nth-child(4)");
+        let siblingDiv = document.createElement("div");
+        siblingDiv.classList.add("grid-item");
+        siblingDiv.innerHTML = `
+                <h3>${human.name}</h3>
+                <img src="images/human.png">
+            `;
+        beforeSibling.insertAdjacentElement("afterend", siblingDiv);
+    }
 
 
     // Remove form from screen
     document.getElementById("btn").addEventListener("click", function(){
         let formEl = document.getElementById("dino-compare");
-        formEl.remove();
-        getDinoData();
+        
+        
+        // -> get data from file
+        getDinoData().then((dinoArray) => {
+            // -> create dinosaur objects
+            generateHtmlDinosaurs(dinoArray)
+            // -> get human from form
+            let human = getHumanFromForm();
+        
+            
+            // -> create html elements for human
+            generateHtmlHuman(human);
+            // -> remove form
+            formEl.remove();
+            // -> append to html site
+        });
     });
 
 
 // On button click, prepare and display infographic
 
-const constructDinosaurs = (dinos) => {
-    console.log(data);
-    //also here, construct grid objects
-    //get the main tag id=grid
-    //loop through the objects
-    //create a div, inside the div should be
-    //h3, img, p
-    //the images are not in the json
-    //so get the species val, make itlower case
-    //construt an image tag 
-    return dinoArray.map(dino => {
-        return new Dinosaur(dino);
-    });
-    
-}
+    const constructDinosaurs = (dinos) => {
+        console.log(dinos);
 
-const getDinoData = () => {
-    fetch("http://localhost:5000/dino.json").then((response) => {
-        if(!response.ok) {
-            const msg = "Looks like there was a problem. Try again later.";
-            throw new Error(msg);
-        }
-        return response.json();
-    }).then((data) => {
-        constructDinosaurs(data.Dinos);
-    }).catch((err) => {
-        console.log("error", err);
+        return dinos.map(dino => {
+            return new Dinosaur(dino);
+        });
+    }
 
-    });
-}
+    const getDinoData = () => {
+        return fetch("http://localhost:5000/dino.json").then((response) => {
+            if(!response.ok) {
+                const msg = "Looks like there was a problem. Try again later.";
+                throw new Error(msg);
+            }
+            return response.json();
+        }).then((data) => {
+            return constructDinosaurs(data.Dinos);
+        })/*.catch((err) => {
+            console.log("error", err);
+
+        })*/;
+    }
+
+    const getHumanFromForm = () => {
+
+        let human = {};
+
+        //name, height, weight, diet
+        const ids = ["name", "feet", "inches", "weight", "diet"];
+        ids.forEach(id => {
+            human[id] = document.getElementById(id).value;
+        });
+        
+        human.height = parseFloat(human.feet) / 12 + parseFloat(human.inches);
+        human.weight = parseFloat(weight);
+
+        return new Human(human);
+    }
+
+})();
