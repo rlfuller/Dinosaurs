@@ -1,5 +1,8 @@
 
 (function() {
+    //****************** variables ************************************** */
+    let currentHuman;
+
     //****************  constructer functions *****************************/
     function Animal(obj) {
         this.species = obj.species;
@@ -22,12 +25,15 @@
      * 
      */
     Dinosaur.prototype.compareDiet = function(human){
-        let dietComparison = `You are a ${human.diet}. ${this.species} is a ${this.diet}.`
+        //fix case so we can compare
+        let dinoDiet = this.diet.charAt(0).toUpperCase() + this.diet.slice(1);
+    
+        let dietComparison = `You are a ${human.diet}. ${this.species} is a ${dinoDiet}.`
 
-        if (human.diet === this.diet){
-            dietComparison += `You eat the sames sorts of things as ${this.species}.`;
+        if (human.diet === dinoDiet){
+            dietComparison += `You eat the same sorts of things.`;
         } else {
-            dietComparison += $`You and ${this.species} eat different things.`;
+            dietComparison += `You and ${this.species} eat different things.`;
         }
         
         return dietComparison;
@@ -38,20 +44,13 @@
      */
     Dinosaur.prototype.compareHeight = function(human) {
         let heightComparison = "";
-        
-        let dinoFeet = this.height / 12;
-        let dinoInches = this.height % 12;
 
-        let humanFeet = human.height / 12;
-        let humanInches = human.height % 12;
-
-        let comparisonAddOn = `You are ${humanFeet}' ${humanInches}'' 
-            and ${this.species} is ${dinoFeet}' and ${dinoInches}''.`
+        let comparisonAddon = `by approximately ${Math.abs(this.height - human.height)} inches`;
 
         if (this.height - human.height > 0){
-            heightComparison = `${this.species} is taller than you. ` + comparisionAddOn;
+            heightComparison = `${this.species} is taller than you ${comparisonAddon}.`;
         } else {
-            heightComparison = `You are taller than ${this.species}.` + comparisonAddOn;
+            heightComparison = `You are taller than ${this.species} ${comparisonAddon}.`;
         }
 
         return heightComparison;
@@ -67,7 +66,7 @@
             is ${this.weight}lbs.`
 
         if (this.weight - human.weight > 0){
-            weightComparison = `${this.species} weights more than you. ` + comparisionAddOn;
+            weightComparison = `${this.species} weights more than you. ` + comparisonAddOn;
         } else {
             weightComparison = `You weight more than ${this.species}.` + comparisonAddOn;
         }
@@ -86,13 +85,39 @@
 
 //*********************** helper functions *******************************//
 
+   
     /**
      * 
+     * @param {object} obj  Dinosaur object
+     */
+    const createComparison = (obj) => {
+
+        console.log("obj: ", obj);
+        let humanP = document.querySelector("#human > p");
+
+        //first remove the current text so we can reset the text at each click
+        //humanDiv.removeChild("p");
+
+        //then create new
+        //let p = document.createElement("p");
+
+        let diet = obj.compareDiet(currentHuman);
+        let weight = obj.compareWeight(currentHuman);
+        let height = obj.compareHeight(currentHuman);
+
+        let text = `${diet} ${weight} ${height}`;
+
+        //replace the text with the comparison
+        humanP.innerHTML = text;
+
+    }
+
+    /**
      * @param {array of objects} dinoArray 
      */
     const generateHtmlDinosaurs = (dinoArray) => {
         let fragment = document.createDocumentFragment();
-        console.log("rachel: ", dinoArray);
+
         dinoArray.forEach(dino => {
 
             //create div add a class and an id
@@ -105,6 +130,9 @@
                 <img src="images/${dino.species.toLowerCase()}.png">
                 <p>${dino.fact}</p>
             `;
+
+            //assign a dinosaur property with value of the dino object
+            div.dinosaur = dino;
 
             //add div to the fragment
             fragment.appendChild(div);
@@ -126,6 +154,7 @@
         siblingDiv.innerHTML = `
                 <h3>${human.name}</h3>
                 <img src="images/human.png">
+                <p>Click on a Dinosaur to see how you compare!</p>
             `;
         beforeSibling.insertAdjacentElement("afterend", siblingDiv);
     }
@@ -142,9 +171,10 @@
         ids.forEach(id => {
             human[id] = document.getElementById(id).value;
         });
+        console.log("stats: ", human);
         
-        human.height = parseFloat(human.feet) / 12 + parseFloat(human.inches);
-        human.weight = parseFloat(weight);
+        human.height = parseFloat(human.feet) * 12 + parseFloat(human.inches);
+        human.weight = parseFloat(human.weight);
 
         return new Human(human);
     }
@@ -182,7 +212,7 @@
         if (gridItem.id === "human")
             return;
 
-        console.log(e.target, e.currentTarget);
+        createComparison(gridItem.dinosaur);
     })
 
     /**
@@ -201,6 +231,11 @@
             generateHtmlDinosaurs(dinoArray)
             // -> get human from form
             let human = getHumanFromForm();
+            
+            //assign the currentHuman so we can use the the object in 
+            //our comparisons
+            currentHuman = human;
+            console.log("human: ", currentHuman);
 
             // -> create html elements for human
             generateHtmlHuman(human);
