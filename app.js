@@ -4,6 +4,11 @@
     let currentHuman;
 
     //****************  constructer functions *****************************/
+    /**
+     * @description Represents an Animal; parent object
+     * @constructor
+     * @param {object} obj Takes an {} and creates a species, weight, height, and diet
+     */
     function Animal(obj) {
         this.species = obj.species;
         this.weight = obj.weight;
@@ -11,7 +16,11 @@
         this.diet = obj.diet;
     }
 
-    // Create Dino Constructor
+    /**
+     * @description Represents a dinosaur; subclass of Animal
+     * @constructor
+     * @param {object} obj Object contaning the data to construct the class
+     */
     function Dinosaur(obj) {
         Animal.call(this, obj);
         this.where = obj.where;
@@ -22,7 +31,9 @@
     Dinosaur.prototype.constructor = Dinosaur;
 
     /**
-     * 
+     * @description Compares the diet of two different types of objects,
+     * in this case, a Human object and a Dinosaur object
+     * @param {object} Human
      */
     Dinosaur.prototype.compareDiet = function(human){
         //fix case so we can compare
@@ -40,7 +51,9 @@
     }
 
     /**
-     * 
+     * @description Compares the height of two different types of objects,
+     * in this case, a Human object and a Dinosaur object
+     * @param {object} Human
      */
     Dinosaur.prototype.compareHeight = function(human) {
         let heightComparison = "";
@@ -57,7 +70,9 @@
     }
 
     /**
-     * 
+     * @description Compares the weight of two different types of objects,
+     * in this case, a Human object and a Dinosaur object
+     * @param {object} Human
      */
     Dinosaur.prototype.compareWeight = function(human) {
         let weightComparison = "";
@@ -74,6 +89,11 @@
         return weightComparison;
     }
 
+    /**
+     * @description Represents a Human; subclass of Animal
+     * @constructor
+     * @param {object} obj  Object containing the human properties
+     */
     function Human(obj) {
         Animal.call(this, obj);
         this.species = "Human";
@@ -87,7 +107,10 @@
 
    
     /**
-     * 
+     * @description This function will take a Dinosaur object and then using
+     * the dinosaur's compare functions which are found on their prototype, will
+     * call those functions to compare the diet, height and weight of the passed
+     * in object to the current human object.
      * @param {object} obj  Dinosaur object
      */
     const createComparison = (obj) => {
@@ -103,9 +126,12 @@
         //replace the text with the comparison
         humanP.innerHTML = text;
 
-    }
+    };
 
     /**
+     * @description - Taking a array of dinosaur objects, html is created for each
+     * object. These html objects are then attached to the dom so that we have a 
+     * grid of dinosaurs.
      * @param {array of objects} dinoArray 
      */
     const generateHtmlDinosaurs = (dinoArray) => {
@@ -133,10 +159,11 @@
         
         //add dinos to page
         document.getElementById("grid").appendChild(fragment);
-    }
+    };
     
     /**
-     * 
+     * @description - Taking a human object, a div is created for this human. The html
+     * is then attached to the DOM, being placed in the center of the dinosaur objects.
      * @param {obj} human 
      */
     const generateHtmlHuman = (human) => {
@@ -150,10 +177,12 @@
                 <p>Click on a Dinosaur to see how you compare!</p>
             `;
         beforeSibling.insertAdjacentElement("afterend", siblingDiv);
-    }
+    };
 
     /**
-     * 
+     * @description This function will take values from a form and store then in an
+     * object which is then returned to the calling fuction.
+     * @returns a Human object
      */
     const getHumanFromForm = () => {
 
@@ -169,10 +198,12 @@
         human.weight = parseFloat(human.weight);
 
         return new Human(human);
-    }
+    };
 
     /**
-     * 
+     * @description - uses Fetch to read a json file and then for each obect, creates
+     * a Dinosaur object.
+     * @returns Returns an array of Dinosaur objects
      */
     const getDinoData = () => {
         return fetch("http://localhost:5000/dino.json").then((response) => {
@@ -184,16 +215,18 @@
         }).then((data) => {
             return data.Dinos.map(dino => new Dinosaur(dino));
         }).catch((err) => {
+            //TODO: add a nice html error so the user knows what happened and ask
+            //them to try again
             console.log("error", err);
         });
-    }
+    };
 
     //*********************** Event Listeners  ************************ */
 
     /**
-     * This function will add a click event listener to each dinosaur grid. 
-     * If the grid is clicked, then a comparison will occur between the human and the 
-     * dinosaur that was clicked.
+     * @description A click event listener that is added to each dinosaur div or 
+     * div with the id = dinosaur. The callback of the event will trigger a comparison
+     * of the current human and the Dinosaur object represented by the div that is clicked. 
      */
     document.getElementById("grid").addEventListener("click", (e) => {
         
@@ -205,12 +238,13 @@
             return;
 
         createComparison(gridItem.dinosaur);
-    })
+    });
 
     /**
-     * This function adds a click event listener to the compare button. The
-     * callback of the event listener will then read the dinosaurs from a file, create
-     * objects from them and then call a method that creates html elements for them. 
+     * @description A click event listener added to the 'compare' button. 
+     * The callback to this event listener will then read the dinosaurs from a file,
+     * create objects from them and then call a method that creates html elements 
+     * for them. 
      * 
      * The click for this element is the starting point for the infographic. 
      */
