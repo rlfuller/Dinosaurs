@@ -92,14 +92,7 @@
      */
     const createComparison = (obj) => {
 
-        console.log("obj: ", obj);
         let humanP = document.querySelector("#human > p");
-
-        //first remove the current text so we can reset the text at each click
-        //humanDiv.removeChild("p");
-
-        //then create new
-        //let p = document.createElement("p");
 
         let diet = obj.compareDiet(currentHuman);
         let weight = obj.compareWeight(currentHuman);
@@ -171,7 +164,6 @@
         ids.forEach(id => {
             human[id] = document.getElementById(id).value;
         });
-        console.log("stats: ", human);
         
         human.height = parseFloat(human.feet) * 12 + parseFloat(human.inches);
         human.weight = parseFloat(human.weight);
@@ -235,7 +227,6 @@
             //assign the currentHuman so we can use the the object in 
             //our comparisons
             currentHuman = human;
-            console.log("human: ", currentHuman);
 
             // -> create html elements for human
             generateHtmlHuman(human);
