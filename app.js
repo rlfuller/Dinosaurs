@@ -1,5 +1,6 @@
 
 (function() {
+    //****************  constructer functions *****************************/
     function Animal(obj) {
         this.species = obj.species;
         this.weight = obj.weight;
@@ -17,8 +18,62 @@
     Dinosaur.prototype = Object.create(Animal.prototype);
     Dinosaur.prototype.constructor = Dinosaur;
 
+    /**
+     * 
+     */
+    Dinosaur.prototype.compareDiet = function(human){
+        let dietComparison = `You are a ${human.diet}. ${this.species} is a ${this.diet}.`
 
-    // Create Human Object
+        if (human.diet === this.diet){
+            dietComparison += `You eat the sames sorts of things as ${this.species}.`;
+        } else {
+            dietComparison += $`You and ${this.species} eat different things.`;
+        }
+        
+        return dietComparison;
+    }
+
+    /**
+     * 
+     */
+    Dinosaur.prototype.compareHeight = function(human) {
+        let heightComparison = "";
+        
+        let dinoFeet = this.height / 12;
+        let dinoInches = this.height % 12;
+
+        let humanFeet = human.height / 12;
+        let humanInches = human.height % 12;
+
+        let comparisonAddOn = `You are ${humanFeet}' ${humanInches}'' 
+            and ${this.species} is ${dinoFeet}' and ${dinoInches}''.`
+
+        if (this.height - human.height > 0){
+            heightComparison = `${this.species} is taller than you. ` + comparisionAddOn;
+        } else {
+            heightComparison = `You are taller than ${this.species}.` + comparisonAddOn;
+        }
+
+        return heightComparison;
+    }
+
+    /**
+     * 
+     */
+    Dinosaur.prototype.compareWeight = function(human) {
+        let weightComparison = "";
+
+        let comparisonAddOn = `You are ${human.weight}lbs and ${this.species}
+            is ${this.weight}lbs.`
+
+        if (this.weight - human.weight > 0){
+            weightComparison = `${this.species} weights more than you. ` + comparisionAddOn;
+        } else {
+            weightComparison = `You weight more than ${this.species}.` + comparisonAddOn;
+        }
+
+        return weightComparison;
+    }
 
     function Human(obj) {
         Animal.call(this, obj);
@@ -28,24 +83,13 @@
 
     Human.prototype = Object.create(Animal.prototype);
     Human.prototype.constructor = Human;
-    // Use IIFE to get human data from form
 
+//*********************** helper functions *******************************//
 
-    // Create Dino Compare Method 1
-    // NOTE: Weight in JSON file is in lbs, height in inches. 
-
-    
-    // Create Dino Compare Method 2
-    // NOTE: Weight in JSON file is in lbs, height in inches.
-
-    
-    // Create Dino Compare Method 3
-    // NOTE: Weight in JSON file is in lbs, height in inches.
-
-
-    // Generate Tiles for each Dino in Array
-  
-        // Add tiles to DOM
+    /**
+     * 
+     * @param {array of objects} dinoArray 
+     */
     const generateHtmlDinosaurs = (dinoArray) => {
         let fragment = document.createDocumentFragment();
         console.log("rachel: ", dinoArray);
@@ -53,7 +97,7 @@
 
             //create div add a class and an id
             let div = document.createElement("div");
-            div.classList.add("grid-item");
+            div.classList.add("grid-item", "dinosaur");
             div.id = dino.species.toLowerCase().replace(/\s+/g, "-");
 
             div.innerHTML = `
@@ -69,10 +113,15 @@
         //add dinos to page
         document.getElementById("grid").appendChild(fragment);
     }
-        
+    
+    /**
+     * 
+     * @param {obj} human 
+     */
     const generateHtmlHuman = (human) => {
         let beforeSibling = document.querySelector("div.grid-item:nth-child(4)");
         let siblingDiv = document.createElement("div");
+        siblingDiv.id = "human";
         siblingDiv.classList.add("grid-item");
         siblingDiv.innerHTML = `
                 <h3>${human.name}</h3>
@@ -81,54 +130,9 @@
         beforeSibling.insertAdjacentElement("afterend", siblingDiv);
     }
 
-
-    // Remove form from screen
-    document.getElementById("btn").addEventListener("click", function(){
-        let formEl = document.getElementById("dino-compare");
-        
-        
-        // -> get data from file
-        getDinoData().then((dinoArray) => {
-            // -> create dinosaur objects
-            generateHtmlDinosaurs(dinoArray)
-            // -> get human from form
-            let human = getHumanFromForm();
-        
-            
-            // -> create html elements for human
-            generateHtmlHuman(human);
-            // -> remove form
-            formEl.remove();
-            // -> append to html site
-        });
-    });
-
-
-// On button click, prepare and display infographic
-
-    const constructDinosaurs = (dinos) => {
-        console.log(dinos);
-
-        return dinos.map(dino => {
-            return new Dinosaur(dino);
-        });
-    }
-
-    const getDinoData = () => {
-        return fetch("http://localhost:5000/dino.json").then((response) => {
-            if(!response.ok) {
-                const msg = "Looks like there was a problem. Try again later.";
-                throw new Error(msg);
-            }
-            return response.json();
-        }).then((data) => {
-            return constructDinosaurs(data.Dinos);
-        })/*.catch((err) => {
-            console.log("error", err);
-
-        })*/;
-    }
-
+    /**
+     * 
+     */
     const getHumanFromForm = () => {
 
         let human = {};
@@ -144,5 +148,66 @@
 
         return new Human(human);
     }
+
+    /**
+     * 
+     */
+    const getDinoData = () => {
+        return fetch("http://localhost:5000/dino.json").then((response) => {
+            if(!response.ok) {
+                const msg = "Looks like there was a problem. Try again later.";
+                throw new Error(msg);
+            }
+            return response.json();
+        }).then((data) => {
+            return data.Dinos.map(dino => new Dinosaur(dino));
+        }).catch((err) => {
+            console.log("error", err);
+        });
+    }
+
+    //*********************** Event Listeners  ************************ */
+
+    /**
+     * This function will add a click event listener to each dinosaur grid. 
+     * If the grid is clicked, then a comparison will occur between the human and the 
+     * dinosaur that was clicked.
+     */
+    document.getElementById("grid").addEventListener("click", (e) => {
+        
+        let gridItem = e.target;
+        while(!gridItem.classList.contains("grid-item")){
+            gridItem = gridItem.parentNode;
+        }
+        if (gridItem.id === "human")
+            return;
+
+        console.log(e.target, e.currentTarget);
+    })
+
+    /**
+     * This function adds a click event listener to the compare button. The
+     * callback of the event listener will then read the dinosaurs from a file, create
+     * objects from them and then call a method that creates html elements for them. 
+     * 
+     * The click for this element is the starting point for the infographic. 
+     */
+    document.getElementById("btn").addEventListener("click", () => {
+        let formEl = document.getElementById("dino-compare");
+        
+        // -> get data from file
+        getDinoData().then((dinoArray) => {
+            // -> create dinosaur objects
+            generateHtmlDinosaurs(dinoArray)
+            // -> get human from form
+            let human = getHumanFromForm();
+
+            // -> create html elements for human
+            generateHtmlHuman(human);
+            // -> remove form
+            formEl.remove();
+
+        });
+    });
 
 })();

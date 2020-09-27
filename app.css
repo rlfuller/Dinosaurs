@@ -50,7 +50,9 @@ p {
     box-sizing: border-box;
     width: 100%;
 }
-
+.grid-item.dinosaur {
+    cursor:pointer;
+}
 .grid-item:nth-child(1){
     background: #009687f5;
 }
